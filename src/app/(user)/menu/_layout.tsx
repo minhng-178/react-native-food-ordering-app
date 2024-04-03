@@ -14,7 +14,6 @@ export default function MenuStack() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        headerTitleAlign: "center",
         headerRight: () => (
           <Link href="/cart" asChild>
             <Pressable>

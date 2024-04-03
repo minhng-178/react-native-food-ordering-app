@@ -1,8 +1,10 @@
 import React from "react";
+import { Redirect, Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
 
 import Colors from "@/constants/Colors";
+
+import { useAuth } from "@/providers/AuthProvider";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 
@@ -16,6 +18,12 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+
+  const { session } = useAuth();
+
+  if (!session) {
+    return <Redirect href={"/"} />;
+  }
 
   return (
     <Tabs
@@ -41,6 +49,7 @@ export default function TabLayout() {
         name="orders"
         options={{
           title: "Orders",
+          headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
         }}
       />

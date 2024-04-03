@@ -1,18 +1,49 @@
-import React, { useState } from "react";
-import { FontAwesome } from "@expo/vector-icons";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
 import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
+import Button from "@components/Button";
 import Colors from "@/constants/Colors";
 
-import products from "@assets/data/products";
+import { PizzaSize } from "@/types";
+import { useProduct } from "@/api/products";
+import { useCart } from "@/providers/CartProvider";
+import { defaultPizzaImage } from "@/constants/Images";
 
 const ProductDetailsScreen = () => {
-  const { id } = useLocalSearchParams();
+  const { id: idString } = useLocalSearchParams();
+  const id = parseFloat(typeof idString === "string" ? idString : idString[0]);
+  const { data: product, error, isLoading } = useProduct(id);
 
-  const product = products.find((product) => product.id === Number(id));
+  const { addItem } = useCart();
 
-  if (!product) return <Text>Product not found</Text>;
+  const router = useRouter();
+
+  const [selectedSize, setSelectedSize] = useState<PizzaSize>("M");
+
+  const addToCart = () => {
+    if (!product) {
+      return;
+    }
+    addItem(product, selectedSize);
+    router.push("/cart");
+  };
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return <Text>Failed to fetch products</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -37,14 +68,18 @@ const ProductDetailsScreen = () => {
       />
 
       <Stack.Screen options={{ title: product?.name }} />
-      <Image source={{ uri: product.image }} style={styles.image} />
-      <Text style={styles.title}>{product.name}</Text>
-      <Text style={styles.price}>${product.price}</Text>
+
+      {/* <RemoteImage
+        path={product?.image}
+        fallback={defaultPizzaImage}
+        style={styles.image}
+      /> */}
+
+      <Text style={styles.title}>{product?.name}</Text>
+      <Text style={styles.price}>${product?.price}</Text>
     </View>
   );
 };
-
-export default ProductDetailsScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -52,13 +87,19 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
-  image: { width: "100%", aspectRatio: 1 },
+  image: {
+    width: "100%",
+    aspectRatio: 1,
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
+    marginVertical: 10,
   },
   price: {
     fontSize: 18,
-    fontWeight: "normal",
+    fontWeight: "500",
   },
 });
+
+export default ProductDetailsScreen;
