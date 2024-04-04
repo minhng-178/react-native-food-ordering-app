@@ -1,17 +1,22 @@
+import { randomUUID } from "expo-crypto";
+import { decode } from "base64-arraybuffer";
+import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
-
 import { View, Text, StyleSheet, Image, TextInput, Alert } from "react-native";
-import { defaultPizzaImage } from "@/constants/Images";
+
 import Button from "@/components/Button";
 import Colors from "@/constants/Colors";
+
 import {
   useDeleteProduct,
   useInsertProduct,
   useProduct,
   useUpdateProduct,
 } from "@/api/products";
+import { supabase } from "@/libs/supabase";
+import { defaultPizzaImage } from "@/constants/Images";
 
 const CreateScreen = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -68,10 +73,10 @@ const CreateScreen = () => {
       return;
     }
 
-    // const imagePath = await uploadImage();
+    const imagePath = await uploadImage();
 
     insertProduct(
-      { name, price: parseFloat(price), image },
+      { name, price: parseFloat(price), image: imagePath },
       {
         onSuccess: () => {
           resetFields();
@@ -86,10 +91,10 @@ const CreateScreen = () => {
       return;
     }
 
-    //const imagePath = await uploadImage();
+    const imagePath = await uploadImage();
 
     updateProduct(
-      { id, name, price: parseFloat(price), image },
+      { id, name, price: parseFloat(price), image: imagePath },
       {
         onSuccess: () => {
           resetFields();
@@ -140,6 +145,28 @@ const CreateScreen = () => {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+    }
+  };
+
+  const uploadImage = async () => {
+    if (!image?.startsWith("file://")) {
+      return;
+    }
+
+    const base64 = await FileSystem.readAsStringAsync(image, {
+      encoding: "base64",
+    });
+    const filePath = `${randomUUID()}.png`;
+    const contentType = "image/png";
+
+    const { data, error } = await supabase.storage
+      .from("product-images")
+      .upload(filePath, decode(base64), { contentType });
+
+    console.log(error);
+
+    if (data) {
+      return data.path;
     }
   };
 

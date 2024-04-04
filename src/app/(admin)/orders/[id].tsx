@@ -1,9 +1,3 @@
-import { useOrderDetails, useUpdateOrder } from "@/api/orders";
-import OrderItemListItem from "@/components/OrderItemListItem";
-import OrderListItem from "@/components/OrderListItem";
-import Colors from "@/constants/Colors";
-import { OrderStatusList } from "@/types";
-import orders from "@assets/data/orders";
 import { Stack, useLocalSearchParams } from "expo-router";
 import {
   FlatList,
@@ -12,6 +6,13 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
+
+import Colors from "@/constants/Colors";
+import OrderItemListItem from "@/components/OrderItemListItem";
+import OrderListItem from "@/components/OrderListItem";
+
+import { OrderStatusList } from "@/types";
+import { useOrderDetails, useUpdateOrder } from "@/api/orders";
 
 export default function OrderDetailsScreen() {
   const { id: idString } = useLocalSearchParams();

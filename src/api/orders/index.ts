@@ -4,8 +4,7 @@ import { InsertTables, Tables, UpdateTables } from "@/types";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 export const useAdminOrderList = ({ archived = false }) => {
-  const statuses = archived ? ["DELIVERED"] : ["NEW", "COOKING", "DELIVERING"];
-
+  const statuses = archived ? ["Delivered"] : ["New", "Cooking", "Delivering"];
   return useQuery({
     queryKey: ["orders", { archived }],
     queryFn: async () => {

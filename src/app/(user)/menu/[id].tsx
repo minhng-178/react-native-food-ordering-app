@@ -3,17 +3,17 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   Pressable,
   ActivityIndicator,
 } from "react-native";
 
 import Button from "@components/Button";
+import RemoteImage from "@/components/RemoteImage";
 
-import { useCart } from "@/providers/CartProvider";
 import { PizzaSize } from "@/types";
 import { useProduct } from "@/api/products";
+import { useCart } from "@/providers/CartProvider";
 import { defaultPizzaImage } from "@/constants/Images";
 
 const sizes: PizzaSize[] = ["S", "M", "L", "XL"];
@@ -41,7 +41,7 @@ const ProductDetailsScreen = () => {
     return <ActivityIndicator />;
   }
 
-  if (error) {
+  if (error || !product) {
     return <Text>Failed to fetch products</Text>;
   }
 
@@ -49,11 +49,11 @@ const ProductDetailsScreen = () => {
     <View style={styles.container}>
       <Stack.Screen options={{ title: product.name }} />
 
-      {/* <RemoteImage
+      <RemoteImage
         path={product?.image}
         fallback={defaultPizzaImage}
         style={styles.image}
-      /> */}
+      />
 
       <Text>Select size</Text>
       <View style={styles.sizes}>

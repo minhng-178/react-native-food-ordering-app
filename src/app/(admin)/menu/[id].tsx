@@ -10,10 +10,9 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
-import Button from "@components/Button";
 import Colors from "@/constants/Colors";
+import RemoteImage from "@/components/RemoteImage";
 
-import { PizzaSize } from "@/types";
 import { useProduct } from "@/api/products";
 import { useCart } from "@/providers/CartProvider";
 import { defaultPizzaImage } from "@/constants/Images";
@@ -26,16 +25,6 @@ const ProductDetailsScreen = () => {
   const { addItem } = useCart();
 
   const router = useRouter();
-
-  const [selectedSize, setSelectedSize] = useState<PizzaSize>("M");
-
-  const addToCart = () => {
-    if (!product) {
-      return;
-    }
-    addItem(product, selectedSize);
-    router.push("/cart");
-  };
 
   if (isLoading) {
     return <ActivityIndicator />;
@@ -69,11 +58,11 @@ const ProductDetailsScreen = () => {
 
       <Stack.Screen options={{ title: product?.name }} />
 
-      {/* <RemoteImage
+      <RemoteImage
         path={product?.image}
         fallback={defaultPizzaImage}
         style={styles.image}
-      /> */}
+      />
 
       <Text style={styles.title}>{product?.name}</Text>
       <Text style={styles.price}>${product?.price}</Text>
